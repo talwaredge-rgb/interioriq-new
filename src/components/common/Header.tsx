@@ -88,15 +88,7 @@ const Header = ({ className = '' }: HeaderProps) => {
                 </Link>
               ))}
               
-              {/* Admin Dashboard Link for Mobile */}
-              <Link
-                href="/admin-dashboard"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-4 py-3 text-sm font-medium text-text-primary hover:text-accent hover:bg-muted rounded-md transition-brand"
-              >
-                <Icon name="ChartBarIcon" size={16} variant="outline" />
-                <span>Admin Dashboard</span>
-              </Link>
+
               
               <div className="pt-4">
                 <Link
