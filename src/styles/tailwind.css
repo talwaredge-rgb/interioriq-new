@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background Colors */
+    --color-background: #FAFBFC; /* gray-50 - Clean canvas, premium feel */
+    --color-foreground: #2C3E50; /* slate-800 - Clear readability, professional tone */
+    
+    /* Surface Colors */
+    --color-card: #FFFFFF; /* white - Card backgrounds */
+    --color-card-foreground: #2C3E50; /* slate-800 - Card text */
+    --color-popover: #FFFFFF; /* white - Popover backgrounds */
+    --color-popover-foreground: #2C3E50; /* slate-800 - Popover text */
+    
+    /* Primary Brand Colors */
+    --color-primary: #2C3E50; /* slate-800 - Professional authority, trustworthy foundation */
+    --color-primary-foreground: #FFFFFF; /* white - Text on primary */
+    
+    /* Secondary Brand Colors */
+    --color-secondary: #34495E; /* slate-700 - Supporting depth, subtle sophistication */
+    --color-secondary-foreground: #FFFFFF; /* white - Text on secondary */
+    
+    /* Accent Colors */
+    --color-accent: #E67E22; /* orange-600 - Warm confidence, action moments */
+    --color-accent-foreground: #FFFFFF; /* white - Text on accent */
+    
+    /* Muted Colors */
+    --color-muted: #F8F9FA; /* gray-100 - Gentle elevation, content separation */
+    --color-muted-foreground: #7F8C8D; /* gray-500 - Hierarchy support, reduced emphasis */
+    
+    /* Destructive/Error Colors */
+    --color-destructive: #E74C3C; /* red-600 - Clear problems, supportive correction */
+    --color-destructive-foreground: #FFFFFF; /* white - Text on destructive */
+    --color-error: #E74C3C; /* red-600 - Clear problems, supportive correction */
+    --color-error-foreground: #FFFFFF; /* white - Text on error */
+    
+    /* Success Colors */
+    --color-success: #27AE60; /* green-600 - Positive confirmation, progress indicators */
+    --color-success-foreground: #FFFFFF; /* white - Text on success */
+    
+    /* Warning Colors */
+    --color-warning: #F39C12; /* yellow-600 - Helpful alerts, attention without alarm */
+    --color-warning-foreground: #FFFFFF; /* white - Text on warning */
+    
+    /* Border & Input Colors */
+    --color-border: #E9ECEF; /* gray-200 - Minimal borders for separation */
+    --color-input: #E9ECEF; /* gray-200 - Input field borders */
+    --color-ring: #E67E22; /* orange-600 - Focus ring color */
+    
+    /* Additional Semantic Colors */
+    --color-surface: #F8F9FA; /* gray-100 - Gentle elevation, content separation */
+    --color-text-primary: #2C3E50; /* slate-800 - Clear readability, professional tone */
+    --color-text-secondary: #7F8C8D; /* gray-500 - Hierarchy support, reduced emphasis */
+    --color-cta: #D35400; /* orange-700 - Bold orange for conversion elements */
+    --color-trust: #27AE60; /* green-600 - Trust builder for savings displays */
+    
+    /* Spacing & Layout */
+    --radius: 0.5rem; /* 8px - Brand border radius */
+  }
+
+  .dark {
+    --color-background: #1A252F; /* slate-900 - Dark background */
+    --color-foreground: #F8F9FA; /* gray-100 - Light text on dark */
+    
+    --color-card: #2C3E50; /* slate-800 - Dark card background */
+    --color-card-foreground: #F8F9FA; /* gray-100 - Light text on dark card */
+    --color-popover: #2C3E50; /* slate-800 - Dark popover background */
+    --color-popover-foreground: #F8F9FA; /* gray-100 - Light text on dark popover */
+    
+    --color-primary: #E67E22; /* orange-600 - Accent becomes primary in dark mode */
+    --color-primary-foreground: #FFFFFF; /* white - Text on primary */
+    
+    --color-secondary: #34495E; /* slate-700 - Secondary remains consistent */
+    --color-secondary-foreground: #F8F9FA; /* gray-100 - Light text on secondary */
+    
+    --color-accent: #E67E22; /* orange-600 - Warm confidence */
+    --color-accent-foreground: #FFFFFF; /* white - Text on accent */
+    
+    --color-muted: #34495E; /* slate-700 - Muted dark background */
+    --color-muted-foreground: #95A5A6; /* gray-400 - Muted text */
+    
+    --color-destructive: #E74C3C; /* red-600 - Error color */
+    --color-destructive-foreground: #FFFFFF; /* white - Text on destructive */
+    --color-error: #E74C3C; /* red-600 - Error color */
+    --color-error-foreground: #FFFFFF; /* white - Text on error */
+    
+    --color-success: #27AE60; /* green-600 - Success color */
+    --color-success-foreground: #FFFFFF; /* white - Text on success */
+    
+    --color-warning: #F39C12; /* yellow-600 - Warning color */
+    --color-warning-foreground: #1A252F; /* slate-900 - Dark text on warning */
+    
+    --color-border: #34495E; /* slate-700 - Dark borders */
+    --color-input: #34495E; /* slate-700 - Dark input borders */
+    --color-ring: #E67E22; /* orange-600 - Focus ring */
+    
+    --color-surface: #34495E; /* slate-700 - Dark surface */
+    --color-text-primary: #F8F9FA; /* gray-100 - Light primary text */
+    --color-text-secondary: #95A5A6; /* gray-400 - Light secondary text */
+    --color-cta: #E67E22; /* orange-600 - CTA color */
+    --color-trust: #27AE60; /* green-600 - Trust color */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-text-primary;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-accent {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Custom shadow utilities matching brand standards */
+  .shadow-brand {
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+  }
+  
+  .shadow-brand-sm {
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+  }
+  
+  .shadow-brand-lg {
+    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+  }
+  
+  /* Animation utilities */
+  .transition-brand {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .transition-brand-fast {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
