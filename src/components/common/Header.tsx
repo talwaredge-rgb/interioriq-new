@@ -56,15 +56,7 @@ const Header = ({ className = '' }: HeaderProps) => {
               </Link>
             ))}
             
-            {/* Admin Dashboard Link - Only visible for internal use */}
-            <Link
-              href="/admin-dashboard"
-              className="px-4 py-2 text-sm font-medium text-text-primary hover:text-accent hover:bg-muted rounded-md transition-brand flex items-center space-x-1"
-              title="Admin Dashboard"
-            >
-              <Icon name="ChartBarIcon" size={16} variant="outline" />
-              <span>Admin</span>
-            </Link>
+
           </nav>
 
           {/* Mobile Menu Button */}
