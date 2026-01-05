@@ -126,17 +126,21 @@ const UploadAnalysisInteractive = () => {
       }
 
       // Send upload confirmation email
-      const emailResponse = await sendUploadConfirmationEmail(
-        contactData.email,
-        contactData.name,
-        selectedFiles.length,
-        formattedDeliveryTime
-      );
+      try {
+  await fetch("/api/send-email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userEmail: contactData.email,
+      userName: contactData.name,
+      fileCount: selectedFiles.length,
+      estimatedDelivery: formattedDeliveryTime
+    }),
+  });
+} catch (e) {
+  console.error("Email failed", e);
+}
 
-      if (!emailResponse.success) {
-        console.warn('Email sending failed:', emailResponse.error);
-        setEmailError('Upload successful, but confirmation email could not be sent. Please check your email address.');
-      }
 
       // Track successful upload completion
       const totalSizeMB = selectedFiles.reduce((sum, file) => sum + file.size, 0) / (1024 * 1024);
