@@ -1,103 +1,110 @@
-const SUPABASE_FUNCTION_URL = process.env.NEXT_PUBLIC_SUPABASE_URL 
-  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-boq-email`
-  : '';
+import { Resend } from 'resend';
 
-interface SendEmailParams {
-  type: 'upload_confirmation' | 'analysis_delivery' | 'progress_update';
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+interface BaseEmailProps {
   userEmail: string;
   userName: string;
   fileCount: number;
-  estimatedDelivery?: string;
-  analysisUrl?: string;
-  progressMessage?: string;
 }
 
-interface EmailResponse {
-  success: boolean;
-  message?: string;
-  emailId?: string;
-  type?: string;
-  error?: string;
+interface UploadConfirmationProps extends BaseEmailProps {
+  estimatedDelivery: string;
 }
 
-export const sendBoQEmail = async (params: SendEmailParams): Promise<EmailResponse> => {
+interface AnalysisDeliveryProps extends BaseEmailProps {
+  analysisUrl: string;
+}
+
+interface ProgressUpdateProps extends BaseEmailProps {
+  progressMessage: string;
+  estimatedDelivery: string;
+}
+
+export const sendUploadConfirmationEmail = async ({
+  userEmail,
+  userName,
+  fileCount,
+  estimatedDelivery,
+}: UploadConfirmationProps) => {
   try {
-    if (!SUPABASE_FUNCTION_URL) {
-      console.warn('Supabase URL not configured - email sending skipped');
-      return {
-        success: false,
-        error: 'Email service not configured'
-      };
-    }
-
-    const response = await fetch(SUPABASE_FUNCTION_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(params)
+    const response = await resend.emails.send({
+      from: 'Support <support@interioriqpro.com>',
+      to: userEmail,
+      subject: 'We’ve received your BOQ — InteriorIQ Pro',
+      html: `
+        <h2>Thanks ${userName || ''}!</h2>
+        <p>Your BOQ has been received successfully.</p>
+        <p><strong>Files Received:</strong> ${fileCount}</p>
+        <p><strong>Estimated Delivery:</strong> ${estimatedDelivery}</p>
+        <p>Our experts will review and get back to you shortly.</p>
+        <br/>
+        <p>— InteriorIQ Pro Team</p>
+      `
     });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || 'Failed to send email');
-    }
-
-    return data;
+    return { success: true, response };
   } catch (error) {
-    console.error('Email service error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email'
-    };
+    console.error('Upload email failed', error);
+    return { success: false, error };
   }
 };
 
-// Helper functions for specific email types
-export const sendUploadConfirmationEmail = async (
-  userEmail: string,
-  userName: string,
-  fileCount: number,
-  estimatedDelivery: string
-): Promise<EmailResponse> => {
-  return sendBoQEmail({
-    type: 'upload_confirmation',
-    userEmail,
-    userName,
-    fileCount,
-    estimatedDelivery
-  });
+export const sendAnalysisDeliveryEmail = async ({
+  userEmail,
+  userName,
+  fileCount,
+  analysisUrl,
+}: AnalysisDeliveryProps) => {
+  try {
+    const response = await resend.emails.send({
+      from: 'Support <support@interioriqpro.com>',
+      to: userEmail,
+      subject: 'Your Interior Cost Analysis is Ready 🎯',
+      html: `
+        <h2>Hello ${userName || ''},</h2>
+        <p>Your BOQ analysis is complete!</p>
+        <p><strong>Files Analyzed:</strong> ${fileCount}</p>
+        <p>You can download it here:</p>
+        <a href="${analysisUrl}">${analysisUrl}</a>
+        <br/><br/>
+        <p>— InteriorIQ Pro Team</p>
+      `
+    });
+
+    return { success: true, response };
+  } catch (error) {
+    console.error('Delivery email failed', error);
+    return { success: false, error };
+  }
 };
 
-export const sendAnalysisDeliveryEmail = async (
-  userEmail: string,
-  userName: string,
-  fileCount: number,
-  analysisUrl: string
-): Promise<EmailResponse> => {
-  return sendBoQEmail({
-    type: 'analysis_delivery',
-    userEmail,
-    userName,
-    fileCount,
-    analysisUrl
-  });
-};
+export const sendProgressUpdateEmail = async ({
+  userEmail,
+  userName,
+  fileCount,
+  progressMessage,
+  estimatedDelivery,
+}: ProgressUpdateProps) => {
+  try {
+    const response = await resend.emails.send({
+      from: 'Support <support@interioriqpro.com>',
+      to: userEmail,
+      subject: 'Update on your BOQ analysis',
+      html: `
+        <h2>Hi ${userName || ''},</h2>
+        <p>Here’s an update on your BOQ:</p>
+        <p>${progressMessage}</p>
+        <p><strong>Files:</strong> ${fileCount}</p>
+        <p><strong>Estimated Delivery:</strong> ${estimatedDelivery}</p>
+        <br/>
+        <p>— InteriorIQ Pro Team</p>
+      `
+    });
 
-export const sendProgressUpdateEmail = async (
-  userEmail: string,
-  userName: string,
-  fileCount: number,
-  progressMessage: string,
-  estimatedDelivery: string
-): Promise<EmailResponse> => {
-  return sendBoQEmail({
-    type: 'progress_update',
-    userEmail,
-    userName,
-    fileCount,
-    progressMessage,
-    estimatedDelivery
-  });
+    return { success: true, response };
+  } catch (error) {
+    console.error('Progress email failed', error);
+    return { success: false, error };
+  }
 };
