@@ -146,6 +146,7 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
      * -------------------------
      */
     try {
+      console.log("📨 Calling /api/send-email from client...");
       await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
