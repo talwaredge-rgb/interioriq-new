@@ -316,9 +316,16 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
 
             {/* BUTTON */}
             <button
+              type="button"
               onClick={handleUpload}
               disabled={!selectedFile || !email || isUploading}
-              className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg disabled:opacity-50"
+              className={`
+    w-full px-6 py-3.5 font-semibold rounded-lg transition-brand shadow-brand-sm
+    ${isUploading ? 'bg-gray-400 text-white' :
+    (!selectedFile || !email)
+      ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+      : 'bg-accent text-accent-foreground hover:bg-cta'}
+  `} 
             >
               {isUploading ? 'Uploading…' : 'Get Free Analysis'}
             </button>
