@@ -140,29 +140,25 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
       });
     }, 200);
 
-    /**
-     * -------------------------
-     * API CALL (ASYNC SAFE)
-     * -------------------------
-     */
-    try {
-      console.log("📨 Calling /api/send-email from client...");
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userEmail: email,
-          userName: email.split('@')[0] || 'Customer',
-          fileCount: 1,
-          estimatedDelivery: 'Within 24–48 hours',
-        }),
-      });
+/**
+ * API CALL (ASYNC SAFE)
+ */
+try {
+  await fetch('/api/send-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userEmail: email,
+      userName: email.split('@')[0] || 'Customer',
+      fileCount: 1,
+      estimatedDelivery: 'Within 24–48 hours',
+    }),
+  });
 
-      alert(`Upload successful! Your report will be emailed to ${email} within 24–48 hours.`);
-    } catch (err) {
-      console.error('Email send failed', err);
-      alert('Something went wrong. Please retry.');
-    }
+  alert(`Upload successful! Your report will be emailed to ${email} within 24–48 hours.`);
+} catch (err) {
+  console.error('Email send failed', err);
+}
 
     onFileUpload(selectedFile);
     setSelectedFile(null);
