@@ -115,12 +115,12 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
       if (prev >= 100) {
         clearInterval(interval);
 
-        setTimeout(async () => {
-          setIsUploading(false);
+        setTimeout(() => {
+  setIsUploading(false);
+}, 500);
 
-
-
-     try {
+try {
+  console.log("CALLING EMAIL API...");
   await fetch("/api/send-email", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -131,17 +131,13 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
       estimatedDelivery: "Within 24–48 hours",
     }),
   });
+  console.log("EMAIL CALL COMPLETED");
 
   alert(`Upload successful! You will receive your analysis report within 24–48 hours at ${email}`);
 } catch (err) {
   console.error("Email send failed", err);
 }
 
-
-          setSelectedFile(null);
-          setEmail('');
-
-        }, 500);
 
         return 100;
       }
