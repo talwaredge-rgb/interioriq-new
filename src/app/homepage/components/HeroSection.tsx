@@ -129,13 +129,37 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
      */
     const interval = setInterval(() => {
       setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsUploading(false);
-          }, 400);
-          return 100;
-        }
+      if (prev >= 100) {
+  clearInterval(interval);
+
+  // 🔥 CALL API AFTER PROGRESS COMPLETES
+  const sendEmail = async () => {
+    try {
+      console.log("CALLING /api/send-email");
+
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: email,
+          userName: email.split('@')[0] || 'Customer',
+          fileCount: 1,
+          estimatedDelivery: 'Within 24–48 hours',
+        }),
+      });
+
+      alert(`Upload successful! Your report will be emailed to ${email} within 24–48 hours.`);
+    } catch (err) {
+      console.error('Email send failed', err);
+      alert("Upload completed, but failed to send confirmation email.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  sendEmail();
+  return 100;
+}
         return prev + 10;
       });
     }, 200);
