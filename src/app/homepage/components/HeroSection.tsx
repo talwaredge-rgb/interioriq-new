@@ -95,41 +95,61 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
     setSelectedFile(file);
   };
 
-  const handleUpload = () => {
-    if (!selectedFile || !email) {
-      alert('Please select a file and enter your email');
-      return;
-    }
+ const handleUpload = async () => {
+  if (!selectedFile || !email) {
+    alert('Please select a file and enter your email!');
+    return;
+  }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Please enter a valid email address');
-      return;
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
 
-    setIsUploading(true);
-    setUploadProgress(0);
+  setIsUploading(true);
+  setUploadProgress(0);
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsUploading(false);
-            alert('Upload successful! You will receive your analysis report within 24-48 hours at ' + email);
-            setSelectedFile(null);
-            setEmail('');
-            setUploadProgress(0);
-          }, 500);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+  const interval = setInterval(() => {
+    setUploadProgress((prev) => {
+      if (prev >= 100) {
+        clearInterval(interval);
 
-    onFileUpload(selectedFile);
-  };
+        setTimeout(async () => {
+          setIsUploading(false);
+
+          alert(`Upload successful! You will receive your analysis report within 24-48 hours at ${email}`);
+
+          try {
+            await fetch("/api/send-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userEmail: email,
+                userName: email.split("@")[0] || "Customer",
+                fileCount: 1,
+                estimatedDelivery: "Within 24–48 hours",
+              }),
+            });
+          } catch (err) {
+            console.error("Email send failed", err);
+          }
+
+          setSelectedFile(null);
+          setEmail('');
+
+        }, 500);
+
+        return 100;
+      }
+
+      return prev + 10;
+    });
+  }, 200);
+
+  onFileUpload(selectedFile);
+};
+
 
   return (
     <section className="relative bg-gradient-to-br from-primary via-secondary to-primary min-h-[600px] flex items-center overflow-hidden">
