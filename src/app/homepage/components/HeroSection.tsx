@@ -317,6 +317,7 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
 
             {/* Submit Button */}
             <button
+              type="button"
               onClick={handleUpload}
               disabled={!selectedFile || !email || isUploading}
               className="w-full px-6 py-3.5 bg-accent text-accent-foreground font-semibold rounded-lg hover:bg-cta transition-brand shadow-brand-sm hover:shadow-brand disabled:opacity-50 disabled:cursor-not-allowed"
