@@ -122,6 +122,13 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
 
     setIsUploading(true);
     setUploadProgress(0);
+    
+useEffect(() => {
+  if (uploadProgress === 100 && isUploading) {
+    console.log("UPLOAD COMPLETE → calling email API");
+    sendEmail();
+  }
+}, [uploadProgress, isUploading]);
 
     /**
      * -------------------------
@@ -173,7 +180,6 @@ const sendEmail = async () => {
 };
 
 
-  sendEmail();
   return 100;
 }
         return prev + 10;
