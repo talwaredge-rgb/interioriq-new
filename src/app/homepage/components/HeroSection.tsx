@@ -133,29 +133,44 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
   clearInterval(interval);
 
   // 🔥 CALL API AFTER PROGRESS COMPLETES
-  const sendEmail = async () => {
-    try {
-      console.log("CALLING /api/send-email");
+const sendEmail = async () => {
+  console.log("STEP 1: sendEmail() CALLED!");
 
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userEmail: email,
-          userName: email.split('@')[0] || 'Customer',
-          fileCount: 1,
-          estimatedDelivery: 'Within 24–48 hours',
-        }),
-      });
+  try {
+    console.log("STEP 2: Calling /api/send-email …");
 
-      alert(`Upload successful! Your report will be emailed to ${email} within 24–48 hours.`);
-    } catch (err) {
-      console.error('Email send failed', err);
-      alert("Upload completed, but failed to send confirmation email.");
-    } finally {
-      setIsUploading(false);
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userEmail: email,
+        userName: email.split("@")[0] || "Customer",
+        fileCount: 1,
+        estimatedDelivery: "Within 24–48 hours",
+      }),
+    });
+
+    console.log("STEP 3: Response received", res.status);
+
+    const data = await res.json().catch(() => null);
+    console.log("STEP 4: Response body", data);
+
+    if (!res.ok) {
+      alert("Upload succeeded but email API failed. Check logs.");
+      return;
     }
-  };
+
+    alert(
+      `Upload successful! Your report will be emailed to ${email} within 24–48 hours.`
+    );
+  } catch (err) {
+    console.error("STEP ERROR: fetch crashed", err);
+    alert("Upload completed, but failed to call email API.");
+  } finally {
+    setIsUploading(false);
+  }
+};
+
 
   sendEmail();
   return 100;
