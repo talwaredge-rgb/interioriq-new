@@ -108,6 +108,7 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
    * SAFELY WRITTEN
    */
   const handleUpload = async () => {
+    alert("HANDLE UPLOAD FIRED");
     if (!selectedFile || !email) {
       alert('Please select a file & enter email');
       return;
