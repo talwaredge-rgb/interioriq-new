@@ -7,18 +7,6 @@ interface HeroSectionProps {
   onFileUpload: (file: File) => void;
 }
 
-/**
- * FULLY REBUILT HERO SECTION
- * -------------------------------------------------------
- * - Keeps original UI / branding / gradients
- * - Keeps trust blocks, benefit points, upload box, email section
- * - Fixes ALL async issues that broke Vercel build
- * - Ensures await is ONLY inside async functions
- * - Progress animation works clean
- * - Email API call works and does NOT block UI thread
- * -------------------------------------------------------
- */
-
 export default function HeroSection({ onFileUpload }: HeroSectionProps) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -26,38 +14,61 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
   const [email, setEmail] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [emailTriggered, setEmailTriggered] = useState(false);
 
-  // Hydration Fix
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  if (!isHydrated) {
-    return (
-      <section className="relative bg-gradient-to-br from-primary via-secondary to-primary min-h-[600px] flex items-center">
-        <div className="w-full px-4 lg:px-8 py-16">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-primary-foreground space-y-6">
-              <div className="inline-block px-4 py-2 bg-accent/20 rounded-full text-sm font-medium">
-                India's First Free BoQ Analysis Service
-              </div>
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-                Expert Eyes on Your Interior Investment
-              </h1>
-              <p className="text-xl text-primary-foreground/90">
-                Upload your BoQ & get expert analysis. Free.
-              </p>
-            </div>
-            <div className="bg-card rounded-2xl shadow-brand-lg p-8">
-              <div className="h-64 bg-muted rounded-lg animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // 🔥 EMAIL API CALL (REAL, CENTRAL, CORRECT)
+  const sendEmail = async () => {
+    console.log("📨 Calling /api/send-email ...");
 
-  // Drag Events
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: email,
+          userName: email.split('@')[0] || 'Customer',
+          fileCount: 1,
+          estimatedDelivery: 'Within 24–48 hours',
+        }),
+      });
+
+      console.log("✔️ Email API status:", res.status);
+      const data = await res.json().catch(() => null);
+      console.log("📩 Email API body:", data);
+
+      if (!res.ok) {
+        alert("Upload succeeded but email failed. Please retry.");
+        return;
+      }
+
+      alert(
+        `Upload successful! You will receive your analysis report within 24–48 hours at ${email}`
+      );
+    } catch (err) {
+      console.error("❌ Email API crashed", err);
+      alert("Upload completed but email failed to send.");
+    } finally {
+      setIsUploading(false);
+      setEmailTriggered(true);
+    }
+  };
+
+  /**
+   * 🔥 WHEN PROGRESS REACHES 100 → CALL EMAIL
+   * This is the CORRECT place for useEffect
+   */
+  useEffect(() => {
+    if (uploadProgress === 100 && isUploading && !emailTriggered) {
+      console.log("🎯 Upload complete → Triggering email API");
+      sendEmail();
+    }
+  }, [uploadProgress, isUploading, emailTriggered]);
+
+  // ============ FILE VALIDATION ============
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -77,7 +88,6 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
     if (file) validateAndSetFile(file);
   };
 
-  // Validate file rules
   const validateAndSetFile = (file: File) => {
     const validTypes = [
       'application/pdf',
@@ -103,12 +113,8 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
     setSelectedFile(file);
   };
 
-  /**
-   * MAIN UPLOAD HANDLER
-   * SAFELY WRITTEN
-   */
+  // ================= MAIN UPLOAD ==================
   const handleUpload = async () => {
-    alert("HANDLE UPLOAD FIRED");
     if (!selectedFile || !email) {
       alert('Please select a file & enter email');
       return;
@@ -120,93 +126,25 @@ export default function HeroSection({ onFileUpload }: HeroSectionProps) {
       return;
     }
 
+    console.log("🚀 Upload started");
     setIsUploading(true);
+    setEmailTriggered(false);
     setUploadProgress(0);
-    
-useEffect(() => {
-  if (uploadProgress === 100 && isUploading) {
-    console.log("UPLOAD COMPLETE → calling email API");
-    sendEmail();
-  }
-}, [uploadProgress, isUploading]);
 
-    /**
-     * -------------------------
-     * SAFE PROGRESS SIMULATION
-     * -------------------------
-     */
+    onFileUpload(selectedFile);
+
+    // Fake safe upload animation
     const interval = setInterval(() => {
       setUploadProgress(prev => {
-      if (prev >= 100) {
-  clearInterval(interval);
-
-  // 🔥 CALL API AFTER PROGRESS COMPLETES
-const sendEmail = async () => {
-  console.log("STEP 1: sendEmail() CALLED!");
-
-  try {
-    console.log("STEP 2: Calling /api/send-email …");
-
-    const res = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userEmail: email,
-        userName: email.split("@")[0] || "Customer",
-        fileCount: 1,
-        estimatedDelivery: "Within 24–48 hours",
-      }),
-    });
-
-    console.log("STEP 3: Response received", res.status);
-
-    const data = await res.json().catch(() => null);
-    console.log("STEP 4: Response body", data);
-
-    if (!res.ok) {
-      alert("Upload succeeded but email API failed. Check logs.");
-      return;
-    }
-
-    alert(
-      `Upload successful! Your report will be emailed to ${email} within 24–48 hours.`
-    );
-  } catch (err) {
-    console.error("STEP ERROR: fetch crashed", err);
-    alert("Upload completed, but failed to call email API.");
-  } finally {
-    setIsUploading(false);
-  }
-};
-
-
-  return 100;
-}
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
         return prev + 10;
       });
     }, 200);
 
-/**
- * API CALL (ASYNC SAFE)
- */
-try {
-  await fetch('/api/send-email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      userEmail: email,
-      userName: email.split('@')[0] || 'Customer',
-      fileCount: 1,
-      estimatedDelivery: 'Within 24–48 hours',
-    }),
-  });
-
-  alert(`Upload successful! Your report will be emailed to ${email} within 24–48 hours.`);
-} catch (err) {
-  console.error('Email send failed', err);
-}
-
-    onFileUpload(selectedFile);
+    // reset UI after upload
     setSelectedFile(null);
     setEmail('');
   };
